@@ -53,6 +53,16 @@ void processInput(GLFWwindow *window)	// Function to detect key press (esc) whic
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 }
 
 
@@ -186,6 +196,9 @@ int main(void)
 								// do it before glClear, otherwise function will wait until 
 								// window is cleared
 								*/
+
+
+		
 		
 		/* Render here */
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// Used to change the colour of the window
