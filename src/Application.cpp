@@ -26,12 +26,30 @@ float vertices[] = {	// three vertices (3D position) for triangle
 };
 */
 
+float vertices[] = {
+	// Left triangle
+	-0.75f, -0.5f, 0.0f,  // bottom left
+	-0.5f,  0.5f, 0.0f,   // top
+	-0.25f, -0.5f, 0.0f,  // bottom right
+
+	// Right triangle
+	 0.25f, -0.5f, 0.0f,  // bottom left
+	 0.5f,  0.5f, 0.0f,   // top
+	 0.75f, -0.5f, 0.0f   // bottom right
+};
+
+
+
+/*
 float vertices[] = { // rectangle
 	 0.5f,  0.5f, 0.0f, // top right
 	 0.5f, -0.5f, 0.0f, // bottom right
 	-0.5f, -0.5f, 0.0f, // bottom left
 	-0.5f,  0.5f, 0.0f // top left
 };
+*/
+
+
 
 unsigned int indices[] = { // note that we start from 0!
 	0, 1, 3, // first triangle
@@ -206,8 +224,9 @@ int main(void)
 
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glBindVertexArray(0);
 		
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
