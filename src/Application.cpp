@@ -17,6 +17,15 @@ const char *fragmentShaderSource = "#version 330 core\n"
 " FragColor = vec4(0.3f, 0.1f, 0.8f, 1.0f);\n"
 "}\0";
 
+const char* tfragmentShaderSource = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+" FragColor = vec4(0.9f, 0.3f, 0.4f, 1.0f);\n"
+"}\0";
+
+
+
 
 /*
 float vertices[] = {	// three vertices (3D position) for triangle
@@ -131,6 +140,11 @@ int main(void)
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
+
+	unsigned int tfragmentShader;
+	tfragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(tfragmentShader, 1, &tfragmentShaderSource, NULL);
+	glCompileShader(tfragmentShader);
 	
 	int success;		// integer to indicate success
 	char infoLog[512];	// storage container for error message
@@ -150,6 +164,14 @@ int main(void)
 		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 
+	glGetShaderiv(tfragmentShader, GL_COMPILE_STATUS, &success);	// check if successful with glGetShaderiv
+	if (!success)
+	{
+		glGetShaderInfoLog(tfragmentShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::TFRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	//--------------SHADER1----------------------
 	unsigned int shaderProgram;	
 	shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
@@ -165,6 +187,28 @@ int main(void)
 	glUseProgram(shaderProgram);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	//--------------SHADER1----------------------
+
+	//--------------SHADER2----------------------
+	unsigned int tshaderProgram;
+	tshaderProgram = glCreateProgram();
+	glAttachShader(tshaderProgram, vertexShader);
+	glAttachShader(tshaderProgram, tfragmentShader);
+	glLinkProgram(tshaderProgram);
+
+	glGetProgramiv(tshaderProgram, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(tshaderProgram, 512, NULL, infoLog);
+		std::cout << "ERROR::TSHADER::TLINKING::FAILED\n" << infoLog << std::endl;
+	}
+
+	glUseProgram(tshaderProgram);
+	glDeleteShader(vertexShader);
+	glDeleteShader(tfragmentShader);
+	//--------------SHADER2----------------------
+
+
+
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -222,9 +266,15 @@ int main(void)
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// Used to change the colour of the window
 		glClear(GL_COLOR_BUFFER_BIT);			// Clear the colour buffer 
 
-		glUseProgram(shaderProgram);
+		glUseProgram(shaderProgram);	// triangle 1 using first shader
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		glUseProgram(tshaderProgram);	// triangle 2 using second shader
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 3, 3);
+
+
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//glBindVertexArray(0);
 		
