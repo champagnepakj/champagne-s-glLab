@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "../shaders/shader.h"
+#include "stb/stb_image.h"
 
 
 
@@ -45,13 +46,31 @@ float vertices[] = {	// three vertices (3D position) for triangle
 };
 */
 
-
+/*
 float vertices[] = {
 	   // positions //     // colors //
 	-0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // bottom left
 	 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom right
 	 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f  // top
 };
+*/
+
+
+float texCoords[] = {
+	0.0f, 0.0f, // lower-left corner
+	1.0f, 0.0f, // lower-right corner
+	0.5f, 1.0f	// top-center corner
+};
+
+float vertices[] = {
+		// positions // colors // texture coords
+	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,	// top right
+	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,	// bottom right
+	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,	// bottom left
+	-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f	// top left
+};
+
+
 
 
 /*
@@ -169,11 +188,14 @@ int main(void)
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	// color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
 	glEnableVertexAttribArray(1);
+	// texture coord attributes
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	unsigned int EBO;
 	glGenBuffers(1, &EBO);
@@ -182,7 +204,7 @@ int main(void)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	/*            FOR ELEMENT BUFFER OBJECT
+	/*         //FOR ELEMENT BUFFER OBJECT
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -192,7 +214,15 @@ int main(void)
 	glEnableVertexAttribArray(0);
 	*/
 
-
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("res/textures/container.jpg", &width, &height, &nrChannels, 0);
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	//glActiveTexture(GL_TEXTURE0); // remove if only using 1 tex on obj
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data);
 
 
 
@@ -224,17 +254,17 @@ int main(void)
 		
 
 		ourShader.use();
-
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		//---glUseProgram(tshaderProgram);	// triangle 2 using second shader
 		//---glBindVertexArray(VAO);
 		//---glDrawArrays(GL_TRIANGLES, 3, 3);
 
 
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		//glBindVertexArray(0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
 		
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
@@ -244,6 +274,7 @@ int main(void)
 	}
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 	glfwTerminate();	// clear the resources once finished
 	return 0;
 
