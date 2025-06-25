@@ -15,8 +15,44 @@
 
 float mixValue = 0.1f;
  
-
-
+float vertices[] = {
+-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+ 0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+ 0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+ 0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+-0.5f,  0.5f, -0.5f, 0.0f, 1.0f,
+-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+-0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+ 0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
+ 0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
+ 0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
+-0.5f,  0.5f,  0.5f, 0.0f, 1.0f,
+-0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+-0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+-0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+-0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+-0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+ 0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+ 0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+ 0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+ 0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+ 0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+ 0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+ 0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+ 0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
+ 0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
+-0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+-0.5f,  0.5f, -0.5f, 0.0f, 1.0f,
+ 0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+ 0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+ 0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+-0.5f,  0.5f,  0.5f, 0.0f, 0.0f,
+-0.5f,  0.5f, -0.5f, 0.0f, 1.0f
+};
 
 float texCoords[] = {
 	0.0f, 0.0f, // lower-left corner
@@ -40,7 +76,7 @@ float vertices2[] = { // zoomed texture
 -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.45f, 0.55f	// top left
 };
 
-float vertices[] = {
+float verticesXXX[] = {
 	// positions          // texture coords
 	 0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
 	 0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
@@ -132,7 +168,7 @@ int main(void)
 		return -1;
 	}
 	
-	Shader ourShader("shaders/new.vs", "shaders/new.fs");
+	Shader ourShader("shaders/coord.vs", "shaders/coord.fs");
 
 	unsigned int VBO; // initialise an ID for the VBO buffer
 	unsigned int VAO;
@@ -248,7 +284,7 @@ int main(void)
 
 
 	
-
+	
 
 
 
@@ -287,30 +323,34 @@ int main(void)
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
+		//-------3D-------//
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f)); // model
+
+		glm::mat4 view = glm::mat4(1.0f);
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f)); // view
+
+		glm::mat4 projection;
+		projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 		
+		unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
+		unsigned int viewLoc = glGetUniformLocation(ourShader.ID, "view");
+
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+		
+		
+		ourShader.setMat4("projection", projection);
+		//ourShader.use();
 
 		
-		glm::mat4 transform = glm::mat4(1.0f);
-
-		
-		transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-		transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
-		//transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		
-		//transform = glm::scale(transform, glm::vec3(0.5f, 0.5f, 0.5f));
-
-		
-		
-
-		ourShader.use();
-
-		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
 		glBindVertexArray(VAO);
 		ourShader.setFloat("mixer", mixValue);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glEnable(GL_DEPTH_TEST);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 		
 
 		//glDrawArrays(GL_TRIANGLES, 0, 3);

@@ -37,6 +37,8 @@
     <None Include="shaders\default.fs" />
     <None Include="shaders\new.vs" />
     <None Include="shaders\new.fs" />
+    <None Include="shaders\coord.vs" />
+    <None Include="shaders\coord.fs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Misc.txt" />

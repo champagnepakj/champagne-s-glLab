@@ -150,6 +150,8 @@
     <ClCompile Include="src\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\coord.fs" />
+    <None Include="shaders\coord.vs" />
     <None Include="shaders\default.fs" />
     <None Include="shaders\default.vs" />
     <None Include="shaders\new.fs" />
