@@ -24,7 +24,7 @@ float texCoords[] = {
 	0.5f, 1.0f	// top-center corner
 };
 
-float vertices[] = {
+float verticesN[] = {
 		// positions // colors // texture coords
 	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,	// top right
 	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,	// bottom right
@@ -38,6 +38,14 @@ float vertices2[] = { // zoomed texture
  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.55f, 0.45f,	// bottom right
 -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.45f, 0.45f,	// bottom left
 -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.45f, 0.55f	// top left
+};
+
+float vertices[] = {
+	// positions          // texture coords
+	 0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
+	 0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
+	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
+	-0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left 
 };
 
 
@@ -124,30 +132,29 @@ int main(void)
 		return -1;
 	}
 	
-	Shader ourShader("shaders/default.vs", "shaders/default.fs");
+	Shader ourShader("shaders/new.vs", "shaders/new.fs");
 
-	unsigned int VBO;															// initialise an ID for the VBO buffer
-	glGenBuffers(1, &VBO);														// generate the buffer -- parameters(n, buffers)
+	unsigned int VBO; // initialise an ID for the VBO buffer
+	unsigned int VAO;
+	unsigned int EBO;
+
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+	
+	glBindVertexArray(VAO);
+
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);											// bind the buffer with target GL_ARRAY_BUFFER and buffer VBO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);	// copy user-defined data into currently bound buffer, VBO is bound to GL_ARRAY_BUFFER
 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	
 	
 	
-	
-
-
-
-
-	
-
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	/*
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); // 8 -> 5
 	glEnableVertexAttribArray(0);
 	// color attribute
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
@@ -155,12 +162,18 @@ int main(void)
 	// texture coord attributes
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	*/
+	
+	
+	
+	
 
-	unsigned int EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	// position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	// texture coord attribute
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 	
 
 	/*         //FOR ELEMENT BUFFER OBJECT
@@ -182,11 +195,11 @@ int main(void)
 	glGenTextures(1, &texture1);
 	glBindTexture(GL_TEXTURE_2D, texture1);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// PREVIOUSLY GL_REPEAT INSTEAD OF CLAMP
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// PREVIOUSLY GL_REPEAT INSTEAD OF CLAMP
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);		// PREVIOUSLY GL_LINEAR INSTEAD OF NEAREST
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);		// PREVIOUSLY GL_LINEAR INSTEAD OF NEAREST
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	int width, height, nrChannels;
 
@@ -211,8 +224,8 @@ int main(void)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
 	
 
@@ -232,6 +245,14 @@ int main(void)
 	ourShader.use();
 	ourShader.setInt("texture1", 0);
 	ourShader.setInt("texture2", 1);
+
+
+	
+
+
+
+
+
 
 
 
@@ -266,7 +287,27 @@ int main(void)
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
+		
+
+		
+		glm::mat4 transform = glm::mat4(1.0f);
+
+		
+		transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+		//transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		
+		//transform = glm::scale(transform, glm::vec3(0.5f, 0.5f, 0.5f));
+
+		
+		
+
 		ourShader.use();
+
+		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
 		glBindVertexArray(VAO);
 		ourShader.setFloat("mixer", mixValue);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

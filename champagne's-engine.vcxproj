@@ -152,6 +152,7 @@
   <ItemGroup>
     <None Include="shaders\default.fs" />
     <None Include="shaders\default.vs" />
+    <None Include="shaders\new.fs" />
     <None Include="shaders\new.vs" />
     <None Include="shaders\shader.h" />
   </ItemGroup>
