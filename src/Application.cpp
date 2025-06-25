@@ -1,59 +1,21 @@
 
 #include <iostream>
+#include <algorithm>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "../shaders/shader.h"
 #include "stb/stb_image.h"
 
+#include <../Dependencies/GLM/glm.hpp>
+#include <../Dependencies/GLM/gtc/matrix_transform.hpp>
+#include <../Dependencies/GLM/gtc/type_ptr.hpp>
 
 
 
 
+float mixValue = 0.1f;
+ 
 
-
-/*
-const char *fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"in vec4 vertexColor;\n"
-"void main()\n"
-"{\n"
-" FragColor = vertexColor;\n"
-"}\0";
-*/
-
-
-
-
-
-
-
-/*
-const char* tfragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-" FragColor = vec4(0.3f, 0.1f, 0.8f, 1.0f);\n"
-"}\0";
-*/
-
-
-
-/*
-float vertices[] = {	// three vertices (3D position) for triangle
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f
-};
-*/
-
-/*
-float vertices[] = {
-	   // positions //     // colors //
-	-0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // bottom left
-	 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom right
-	 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f  // top
-};
-*/
 
 
 float texCoords[] = {
@@ -70,33 +32,13 @@ float vertices[] = {
 	-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f	// top left
 };
 
-
-
-
-/*
-float vertices[] = {
-	// Left triangle
-	-0.75f, -0.5f, 0.0f,  // bottom left
-	-0.5f,  0.5f, 0.0f,   // top
-	-0.25f, -0.5f, 0.0f,  // bottom right
-
-	// Right triangle
-	 0.25f, -0.5f, 0.0f,  // bottom left
-	 0.5f,  0.5f, 0.0f,   // top
-	 0.75f, -0.5f, 0.0f   // bottom right
+float vertices2[] = { // zoomed texture
+	// positions // colors // texture coords
+ 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.55f, 0.55f,	// top right
+ 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.55f, 0.45f,	// bottom right
+-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.45f, 0.45f,	// bottom left
+-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.45f, 0.55f	// top left
 };
-*/
-
-
-/*
-float vertices[] = { // rectangle
-	 0.5f,  0.5f, 0.0f, // top right
-	 0.5f, -0.5f, 0.0f, // bottom right
-	-0.5f, -0.5f, 0.0f, // bottom left
-	-0.5f,  0.5f, 0.0f // top left
-};
-*/
-
 
 
 unsigned int indices[] = { // note that we start from 0!
@@ -130,8 +72,25 @@ void processInput(GLFWwindow *window)	// Function to detect key press (esc) whic
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
+	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+		glPointSize(5.0f);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+	{
+		mixValue += 0.01f;
+		mixValue = std::clamp(mixValue, 0.0f, 1.0f); // UNCLAMP FOR FUN EFFECT
+	}
 	
+	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+	{
+		mixValue -= 0.01f;
+		mixValue = std::clamp(mixValue, 0.0f, 1.0f); // UNCLAMP FOR FUN EFFECT
+	}
 }
+
 
 
 
@@ -174,7 +133,7 @@ int main(void)
 
 	
 	
-
+	
 	
 
 
@@ -202,7 +161,7 @@ int main(void)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	
 
 	/*         //FOR ELEMENT BUFFER OBJECT
 	glBindVertexArray(VAO);
@@ -214,15 +173,66 @@ int main(void)
 	glEnableVertexAttribArray(0);
 	*/
 
+	
+
+	
+	unsigned int texture1;
+	unsigned int texture2;
+
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// PREVIOUSLY GL_REPEAT INSTEAD OF CLAMP
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);		// PREVIOUSLY GL_LINEAR INSTEAD OF NEAREST
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 	int width, height, nrChannels;
+
+	stbi_set_flip_vertically_on_load(true);
+
 	unsigned char* data = stbi_load("res/textures/container.jpg", &width, &height, &nrChannels, 0);
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	//glActiveTexture(GL_TEXTURE0); // remove if only using 1 tex on obj
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		
+	}
+	else 
+	{
+		std::cout << "Failed to load texture1" << std::endl;
+	}
 	stbi_image_free(data);
+
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	
+	
+
+	data = stbi_load("res/textures/awesomeface.png", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		
+	}
+	else
+	{
+		std::cout << "Failed to load texture2" << std::endl;
+	}
+	stbi_image_free(data);
+
+	ourShader.use();
+	ourShader.setInt("texture1", 0);
+	ourShader.setInt("texture2", 1);
+
 
 
 
@@ -251,19 +261,24 @@ int main(void)
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// Used to change the colour of the window
 		glClear(GL_COLOR_BUFFER_BIT);			// Clear the colour buffer 
 
-		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
 
 		ourShader.use();
-		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(VAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
+		ourShader.setFloat("mixer", mixValue);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
 
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		//---glUseProgram(tshaderProgram);	// triangle 2 using second shader
 		//---glBindVertexArray(VAO);
 		//---glDrawArrays(GL_TRIANGLES, 3, 3);
 
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
 		
 		
 		/* Swap front and back buffers */

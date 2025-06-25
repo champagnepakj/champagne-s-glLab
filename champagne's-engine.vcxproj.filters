@@ -35,5 +35,9 @@
     <None Include="shaders\shader.h" />
     <None Include="shaders\default.vs" />
     <None Include="shaders\default.fs" />
+    <None Include="shaders\new.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\Misc.txt" />
   </ItemGroup>
 </Project>

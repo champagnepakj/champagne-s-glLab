@@ -1,0 +1,76 @@
+/*
+const char *fragmentShaderSource = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"in vec4 vertexColor;\n"
+"void main()\n"
+"{\n"
+" FragColor = vertexColor;\n"
+"}\0";
+*/
+
+
+
+
+
+
+
+/*
+const char* tfragmentShaderSource = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+" FragColor = vec4(0.3f, 0.1f, 0.8f, 1.0f);\n"
+"}\0";
+*/
+
+
+
+/*
+float vertices[] = {	// three vertices (3D position) for triangle
+	-0.5f, -0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f
+};
+*/
+
+/*
+float vertices[] = {
+	   // positions //     // colors //
+	-0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // bottom left
+	 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom right
+	 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f  // top
+};
+*/
+
+/*
+float vertices[] = {
+	// Left triangle
+	-0.75f, -0.5f, 0.0f,  // bottom left
+	-0.5f,  0.5f, 0.0f,   // top
+	-0.25f, -0.5f, 0.0f,  // bottom right
+
+	// Right triangle
+	 0.25f, -0.5f, 0.0f,  // bottom left
+	 0.5f,  0.5f, 0.0f,   // top
+	 0.75f, -0.5f, 0.0f   // bottom right
+};
+*/
+
+
+/*
+float vertices[] = { // rectangle
+	 0.5f,  0.5f, 0.0f, // top right
+	 0.5f, -0.5f, 0.0f, // bottom right
+	-0.5f, -0.5f, 0.0f, // bottom left
+	-0.5f,  0.5f, 0.0f // top left
+};
+*/
+
+
+
+
+//FragColor = vec4(ourColor, 1.0);
+	//FragColor = texture(ourTexture, TexCoord);
+	//FragColor = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0);//USE THIS FOR SINGLE TEX WITH RAINBOW COLOR
+	//FragColor = texture(ourTexture, TexCoord) * vec4(1.0, 0.1, 0.2, 1.0); apply flat redish
+	//FragColor = texture(ourTexture, TexCoord) * vec4(ourColor * vec3(1.0, 0.1, 0.2), 1.0);
