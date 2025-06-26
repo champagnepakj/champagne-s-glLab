@@ -43,4 +43,9 @@
   <ItemGroup>
     <Text Include="src\Misc.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
