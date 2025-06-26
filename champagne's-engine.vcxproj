@@ -150,12 +150,16 @@
     <ClCompile Include="src\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\coord.fs" />
-    <None Include="shaders\coord.vs" />
-    <None Include="shaders\default.fs" />
-    <None Include="shaders\default.vs" />
-    <None Include="shaders\new.fs" />
-    <None Include="shaders\new.vs" />
+    <None Include="shaders\fragment\colors.fs" />
+    <None Include="shaders\fragment\coord.fs" />
+    <None Include="shaders\fragment\light_cube.fs" />
+    <None Include="shaders\vertex\colors.vs" />
+    <None Include="shaders\vertex\coord.vs" />
+    <None Include="shaders\fragment\default.fs" />
+    <None Include="shaders\vertex\default.vs" />
+    <None Include="shaders\fragment\new.fs" />
+    <None Include="shaders\vertex\light_cube.vs" />
+    <None Include="shaders\vertex\new.vs" />
     <None Include="shaders\shader.h" />
   </ItemGroup>
   <ItemGroup>
