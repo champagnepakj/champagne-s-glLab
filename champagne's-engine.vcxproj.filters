@@ -45,6 +45,8 @@
     <None Include="shaders\fragment\light_cube.fs" />
     <None Include="shaders\vertex\materials.vs" />
     <None Include="shaders\fragment\materials.fs" />
+    <None Include="shaders\fragment\global.fs" />
+    <None Include="shaders\vertex\global.vs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Misc.txt" />

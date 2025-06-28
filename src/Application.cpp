@@ -398,10 +398,12 @@ int main(void)
 	//----Load Textures----//
 	unsigned int diffuseMap = loadTexture("res/textures/box.png");
 	unsigned int specularMap = loadTexture("res/textures/box_specular.png");
+	unsigned int emissionMap = loadTexture("res/textures/??.png"); //unassigned
 
 	lightingShader.use();
 	lightingShader.setInt("material.diffuse", 0);
 	lightingShader.setInt("material.specular", 1);
+	//lightingShader.setInt("material.emission", 2);
 
 	//---------------------------------------------------------------------------------
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -453,6 +455,7 @@ int main(void)
 		lightingShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
 		lightingShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
 		lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+		
 
 		
 		//-------------------------------------------------------------
@@ -463,19 +466,25 @@ int main(void)
 		//lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
 		//lightingShader.setFloat("material.shininess", 32.0f);
 
-		lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+		////////lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
 		lightingShader.setFloat("material.shininess", 64.0f);
+		
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specularMap);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, emissionMap);
 
 
 		//-------------------------------------------------------------
 		
 		// view/projection transformations
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
+		int width, height;
+		glfwGetFramebufferSize(window, &width, &height);
+		float aspect = static_cast<float>(width) / static_cast<float>(height);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), aspect, 0.1f, 100.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 		lightingShader.setMat4("projection", projection);
 		lightingShader.setMat4("view", view);
