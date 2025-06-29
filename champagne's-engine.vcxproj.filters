@@ -49,12 +49,23 @@
     <None Include="shaders\vertex\global.vs" />
     <None Include="shaders\fragment\multipleLights.fs" />
     <None Include="shaders\vertex\multipleLights.vs" />
+    <None Include="shaders\fragment\model.fs" />
+    <None Include="shaders\vertex\model.vs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Misc.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
