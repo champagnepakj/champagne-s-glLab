@@ -47,6 +47,8 @@
     <None Include="shaders\fragment\materials.fs" />
     <None Include="shaders\fragment\global.fs" />
     <None Include="shaders\vertex\global.vs" />
+    <None Include="shaders\fragment\multipleLights.fs" />
+    <None Include="shaders\vertex\multipleLights.vs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Misc.txt" />

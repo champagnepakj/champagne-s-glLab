@@ -155,6 +155,7 @@
     <None Include="shaders\fragment\global.fs" />
     <None Include="shaders\fragment\light_cube.fs" />
     <None Include="shaders\fragment\materials.fs" />
+    <None Include="shaders\fragment\multipleLights.fs" />
     <None Include="shaders\vertex\colors.vs" />
     <None Include="shaders\vertex\coord.vs" />
     <None Include="shaders\fragment\default.fs" />
@@ -163,6 +164,7 @@
     <None Include="shaders\vertex\global.vs" />
     <None Include="shaders\vertex\light_cube.vs" />
     <None Include="shaders\vertex\materials.vs" />
+    <None Include="shaders\vertex\multipleLights.vs" />
     <None Include="shaders\vertex\new.vs" />
     <None Include="shaders\shader.h" />
   </ItemGroup>
