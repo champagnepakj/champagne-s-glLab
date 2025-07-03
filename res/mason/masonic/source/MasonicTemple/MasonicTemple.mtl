@@ -1,0 +1,79 @@
+newmtl EarthCloud_Marble
+Ka 1.000 1.000 1.000
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+d 1.0
+illum 2
+map_Kd marble.jpg
+
+newmtl Earth_Clouds
+Ka 1.000 1.000 1.000
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+d 1.0
+illum 2
+map_Kd marble.jpg
+
+newmtl Earth_Surface
+Ka 1.000 1.000 1.000
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+d 1.0
+illum 2
+map_Kd marble.jpg
+
+newmtl Gold
+Ka 1.000 1.000 0.000
+Kd 1.000 1.000 0.000
+Ks 0.500 0.500 0.500
+d 1.0
+illum 2
+map_Kd gold.jpg
+
+newmtl GoldDetails
+Ka 1.000 1.000 0.000
+Kd 1.000 1.000 0.000
+Ks 0.500 0.500 0.500
+d 1.0
+illum 2
+map_Kd gold.jpg
+
+newmtl Marble_Pillar
+Ka 1.000 1.000 1.000
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+d 1.0
+illum 2
+map_Kd marble.jpg
+
+newmtl Marble081
+Ka 1.000 1.000 1.000
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+d 1.0
+illum 2
+map_Kd marble.jpg
+
+newmtl Material
+Ka 1.000 1.000 1.000
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+d 1.0
+illum 2
+map_Kd marble.jpg
+
+newmtl Moon
+Ka 1.000 1.000 1.000
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+d 1.0
+illum 2
+map_Kd moon.jpg
+
+newmtl Wood
+Ka 1.000 1.000 1.000
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+d 1.0
+illum 2
+map_Kd wood.jpg

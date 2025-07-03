@@ -16,13 +16,17 @@
 #include <assimp/postprocess.h>
 #include "mesh.h"
 #include "model.h"
+#include <chrono>
+#include <iomanip>
+#include <map>
 
 
 
+//float deltaTime = 0.0f;
+//float lastFrame = 0.0f;
 
-
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -70,9 +74,20 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 }
 
 
-/*
+
+
+
+
+
+
+
+
+
+
+
 unsigned int loadTexture(char const* path)
 {
+	//glDisable(GL_DEPTH_TEST);
 	unsigned int textureID;
 	glGenTextures(1, &textureID);
 
@@ -94,6 +109,8 @@ unsigned int loadTexture(char const* path)
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -107,7 +124,44 @@ unsigned int loadTexture(char const* path)
 
 	return textureID;
 }
-*/
+
+unsigned int loadCubemap(std::vector<std::string> faces)
+{
+	stbi_set_flip_vertically_on_load(false);
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+	int width, height, nrChannels;
+	for (unsigned int i = 0; i < faces.size(); i++)
+	{
+		unsigned char* data = stbi_load(faces[i].c_str(), &width, &height,
+			&nrChannels, 0);
+		if (data)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB,
+				width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			stbi_image_free(data);
+		}
+		else
+		{
+			std::cout << "Cubemap failed to load at path: " << faces[i]
+				<< std::endl;
+			stbi_image_free(data);
+		}
+	}
+	//glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	//glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	
+
+
+	return textureID;
+}
 
 
 
@@ -196,6 +250,7 @@ float verticesnotexture[] = {
 		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
 		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 };
+
 
 
 
@@ -324,8 +379,109 @@ unsigned int indices[] = { // note that we start from 0!
 	1, 2, 3 // second triangle
 };
 
+float planeVertices[] = {
+	// positions          // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
+	 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+	-5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
+	-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+
+	 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+	-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+	 5.0f, -0.5f, -5.0f,  2.0f, 2.0f
+};
+
+float cubeVertices[] = {
+	// positions          // normals
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+};
 
 
+
+
+float skyboxVertices[] = {
+	// positions          
+	-1.0f,  1.0f, -1.0f,
+	-1.0f, -1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+	 1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+
+	-1.0f, -1.0f,  1.0f,
+	-1.0f, -1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f,  1.0f,
+	-1.0f, -1.0f,  1.0f,
+
+	 1.0f, -1.0f, -1.0f,
+	 1.0f, -1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+
+	-1.0f, -1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f, -1.0f,  1.0f,
+	-1.0f, -1.0f,  1.0f,
+
+	-1.0f,  1.0f, -1.0f,
+	 1.0f,  1.0f, -1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f, -1.0f,
+
+	-1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f,  1.0f,
+	 1.0f, -1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f,  1.0f,
+	 1.0f, -1.0f,  1.0f
+};
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)	// This function is used to dynamically change the viewPort as the user resizes the window
 {
@@ -393,6 +549,8 @@ void processInput(GLFWwindow *window)	// Function to detect key press (esc) whic
 
 
 
+
+
 int main(void)
 {
 
@@ -409,12 +567,13 @@ int main(void)
 		return -1;
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(800, 600, "champagne's engine", NULL, NULL);
+	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "champagne's engine", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
 		return -1;
 	}
+
 
 	
 
@@ -431,17 +590,21 @@ int main(void)
 		return -1;
 	}
 
-	stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(false);
 
 	glEnable(GL_DEPTH_TEST);
 	
-	//Shader ourShader("shaders/coord.vs", "shaders/coord.fs");
-	//Shader lightingShader("shaders/light.vs", "shaders/light.fs");
-	//Shader lightingShader("shaders/vertex/multipleLights.vs", "shaders/fragment/multipleLights.fs");
-	//Shader lightCubeShader("shaders/vertex/light_cube.vs", "shaders/fragment/light_cube.fs");
-	Shader ourShader("shaders/vertex/model.vs", "shaders/fragment/model.fs");
-	char path[] = ("res/backpack/backpack.obj");
-	Model ourModel(path);
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+	//glEnable(GL_CULL_FACE);
+	
+	
+	
+	Shader ourShader	("shaders/vertex/alpha.vs", "shaders/fragment/alpha.fs");
+	Shader skyboxShader	("shaders/vertex/skybox.vs"  , "shaders/fragment/skybox.fs");
+	//char path[] = ("res/backpack/backpack.obj");
+	//char path[] = ("res/mason/masonic/source/MasonicTemple/MasonicTemple.obj");
+	//Model ourModel(path);
 	
 
 	
@@ -450,42 +613,200 @@ int main(void)
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	
 	
+
+	
+
+
+	float prevTime = 0.0;
+	float crntTime = 0.0;
+	double timeDiff;
+	unsigned int counter = 0;
+
+	unsigned int cubeVAO;
+	unsigned int cubeVBO;
+	glGenVertexArrays(1, &cubeVAO);
+	glGenBuffers(1, &cubeVBO);
+	glBindVertexArray(cubeVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	
+
+	
+	
+
+	
+
+
+	unsigned int skyboxVAO;
+	unsigned int skyboxVBO;
+	glGenVertexArrays(1, &skyboxVAO);
+	glGenBuffers(1, &skyboxVBO);
+	glBindVertexArray(skyboxVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+	//position att
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	
+
+	
+
+	
+
+
+	// plane texture
+	unsigned int cubeTexture   = loadTexture("res/textures/container.jpg");
+	
+	
+
+	std::vector<std::string> faces;
+	{
+		
+		faces.push_back("res/textures/skybox/right.jpg");
+		faces.push_back("res/textures/skybox/left.jpg");
+		faces.push_back("res/textures/skybox/top.jpg");
+		faces.push_back("res/textures/skybox/bottom.jpg");
+		faces.push_back("res/textures/skybox/front.jpg");
+		faces.push_back("res/textures/skybox/back.jpg");
+		
+
+		/*
+		faces.push_back("res/textures/skybox/png2jpg/right.jpg");
+		faces.push_back("res/textures/skybox/png2jpg/left.jpg");
+		faces.push_back("res/textures/skybox/png2jpg/top.jpg");
+		faces.push_back("res/textures/skybox/png2jpg/bottom.jpg");
+		faces.push_back("res/textures/skybox/png2jpg/back.jpg");
+		faces.push_back("res/textures/skybox/png2jpg/front.jpg");
+		*/
+		
+	};
+
+	unsigned int cubemapTexture = loadCubemap(faces);
+	
+	
+
+	ourShader.use();	// don't forget to enable shader before setting uniforms
+	//ourShader.setVec3("cameraPos", camera.Position);
+	//ourShader.setInt("texture1", 0);
+	ourShader.setInt("skybox", 0);
+
+	skyboxShader.use();
+	skyboxShader.setInt("skybox", 0);
 	
 	
 	
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
+		crntTime = glfwGetTime();
+		timeDiff = crntTime - prevTime;
+		counter++;
+		if (timeDiff >= 1.0 / 5.0)
+		{
+			std::string FPS = std::to_string((1.0 / timeDiff) * counter);
+			std::string ms = std::to_string((timeDiff / counter) * 1000);
+			std::string newTitle = "champagne's engine - " + FPS + "FPS / " + ms + "ms";
+			glfwSetWindowTitle(window, newTitle.c_str());
+			prevTime = crntTime;
+			counter = 0;
+		}
+
+
 		
 		processInput(window);	
 
 
 		
 		
-		/* Render here */
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);					// Used to change the colour of the window
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Clear the colour buffer 
+		/* Render here */				
 
-	
-		// don't forget to enable shader before setting uniforms
-		ourShader.use();
+		/*
+		
+		 ___              _           
+		| . \ ___ ._ _  _| | ___  _ _ 
+		|   // ._>| ' |/ . |/ ._>| '_>
+		|_\_\\___.|_|_|\___|\___.|_|  
+
+		*/
+
+
+
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);					// Used to change the colour of the window
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Clear the colour buffer and depth buffer for depth test and window background color
+
+		
+		
+		
 
 		// view/projection transformations
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		ourShader.use();
+		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = camera.GetViewMatrix();
-		ourShader.setMat4("projection", projection);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
+		
+		ourShader.setMat4("model", model);
 		ourShader.setMat4("view", view);
+		ourShader.setMat4("projection", projection);
+		ourShader.setVec3("cameraPos", camera.Position);
+		
 
+		
+
+
+
+		/*
 		// render the loaded model
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down
 		ourShader.setMat4("model", model);
-		ourModel.Draw(ourShader);
-	
+		ourModel.Draw(cubmapTexture);
+		*/
+
+		//cubes
+		
+		
+		
+		
+		
+		
+		glBindVertexArray(cubeVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		//ourShader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+
 
 		
 		
+		
+		
+		
+		glDepthFunc(GL_LEQUAL);
+		glDepthMask(GL_FALSE);
+		skyboxShader.use();
+		//skyboxShader.setMat4("view", glm::mat4(glm::mat3(camera.GetViewMatrix()))); // remove translation
+		view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+		skyboxShader.setMat4("view", view);
+		skyboxShader.setMat4("projection", projection);
+		
+
+		glBindVertexArray(skyboxVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		glDepthMask(GL_TRUE);
+		glDepthFunc(GL_LESS);
+
+
+
 		
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
@@ -493,6 +814,12 @@ int main(void)
 		/* Poll for and process events */
 		glfwPollEvents();
 	}
+	glDeleteVertexArrays(1, &cubeVAO);
+	glDeleteBuffers(1, &cubeVBO);
+	glDeleteVertexArrays(1, &skyboxVAO);
+	glDeleteBuffers(1, &skyboxVBO);
+	
+	
 	
 	
 	glfwTerminate();	// clear the resources once finished

@@ -150,6 +150,8 @@
     <ClCompile Include="src\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\mason\masonic\source\MasonicTemple\MasonicTemple.mtl" />
+    <None Include="shaders\fragment\alpha.fs" />
     <None Include="shaders\fragment\colors.fs" />
     <None Include="shaders\fragment\coord.fs" />
     <None Include="shaders\fragment\global.fs" />
@@ -157,6 +159,8 @@
     <None Include="shaders\fragment\materials.fs" />
     <None Include="shaders\fragment\model.fs" />
     <None Include="shaders\fragment\multipleLights.fs" />
+    <None Include="shaders\fragment\skybox.fs" />
+    <None Include="shaders\vertex\alpha.vs" />
     <None Include="shaders\vertex\colors.vs" />
     <None Include="shaders\vertex\coord.vs" />
     <None Include="shaders\fragment\default.fs" />
@@ -169,6 +173,7 @@
     <None Include="shaders\vertex\multipleLights.vs" />
     <None Include="shaders\vertex\new.vs" />
     <None Include="shaders\shader.h" />
+    <None Include="shaders\vertex\skybox.vs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Misc.txt" />
